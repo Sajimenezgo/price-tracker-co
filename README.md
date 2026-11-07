@@ -42,5 +42,24 @@ python -m http.server -d docs 8000      # abrir http://localhost:8000
 6. Si la página no hace XHR (SSR), busca `<script id="__NEXT_DATA__">` en *Elements*/*View source*: ahí está el JSON.
 7. Revisa `robots.txt` y los términos de uso; mantén ritmo bajo de peticiones.
 
+## Frontend (SPA estática)
+La interfaz web es una Single Page Application (SPA) 100% estática basada en JavaScript moderno (ES Modules nativo) y Tailwind CSS vía CDN, sin empaquetadores ni dependencias externas pesadas:
+
+- **`docs/index.html`**: Layout accesible con soporte para navegación por teclado, modo oscuro automático, diálogos modales accesibles (`role="dialog"`, trampa de foco, cierre con `Esc`) y diseño responsivo optimizado desde 360 px sin scroll horizontal.
+- **`docs/js/app.js`**: Orquestador liviano que realiza la carga de `docs/data.json`, inicializa el estado y monta los componentes en el DOM.
+- **`docs/js/state.js`**: Almacén reactivo centralizado basado en el patrón Pub/Sub con persistencia en `localStorage` (carrito, fletes por tienda y tasas personalizadas).
+- **`docs/js/format.js`**: Sanitización estricta anti-XSS (`esc`, `safeUrl`) y formateo de moneda en pesos colombianos (`cop`).
+- **`docs/js/components/catalog.js`**: Catálogo de productos con filtros combinados (tienda, categoría, marca, rango de precio, búsqueda en tiempo real, ordenación) y botón "Ver más".
+- **`docs/js/components/cart.js`**: Carrito comparativo multi-tienda con gestión de cantidades, panel editable de fletes por tienda (`fee` y umbral `freeFrom` con advertencia de valores supuestos) y tarjetas de escenarios ("Todo en Éxito / Falabella / Jumbo" vs. "Compra cruzada óptima" indicando ítems faltantes, tiendas usadas y ahorro frente al segundo mejor).
+- **`docs/js/components/payment-panel.js`**: Simulador de medios de pago (`PAYMENT_METHODS`) con TEA editable por método, base de compra seleccionable (mejor global, cruzada o tienda específica), cálculo de capital con descuentos de tarjeta (`card_price`), banner de opción más inteligente, selector de plazos (12, 24, 36), tabla de cuotas/TMV con fórmula visible y gráfica interactiva Capital vs. Intereses (`financing-chart.js`).
+- **`docs/js/components/amortization-table.js`**: Tabla de amortización sistema francés (plazo 1–72 meses) con desglose de cuota fija, interés, abono y saldo final en cero.
+
+### Ejecución de pruebas del frontend
+```bash
+node docs/js/finance.test.mjs
+node docs/js/cart-logic.test.mjs
+node docs/js/components/financing-chart.test.mjs
+```
+
 ## Despliegue
 Settings → Pages → *Deploy from a branch* → `main` / `/docs`.
