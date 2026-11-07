@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Price Tracker Electrodomésticos</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>tailwind.config = { darkMode: "media" }</script>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+<header class="sticky top-0 z-20 bg-white/90 dark:bg-slate-800/90 backdrop-blur border-b border-slate-200 dark:border-slate-700">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+    <h1 class="font-bold text-lg">⚡ Price Tracker</h1>
+    <span id="updated" class="text-xs text-slate-500 hidden sm:inline"></span>
+    <button id="openCart" class="ml-auto relative rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-medium">
+      Carrito <span id="cartCount" class="ml-1 rounded-full bg-white text-indigo-700 px-2 text-xs">0</span>
+    </button>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-6 grid gap-6 lg:grid-cols-[260px_1fr]">
+  <aside class="space-y-4 lg:sticky lg:top-20 self-start">
+    <input id="q" type="search" placeholder="Buscar marca, modelo…" class="w-full rounded-lg border px-3 py-2 dark:bg-slate-800 dark:border-slate-600">
+    <fieldset><legend class="text-sm font-semibold mb-1">Tienda</legend><div id="fStores" class="space-y-1"></div></fieldset>
+    <label class="block text-sm font-semibold">Categoría
+      <select id="fCat" class="mt-1 w-full rounded-lg border px-3 py-2 dark:bg-slate-800 dark:border-slate-600"></select></label>
+    <label class="block text-sm font-semibold">Marca
+      <select id="fBrand" class="mt-1 w-full rounded-lg border px-3 py-2 dark:bg-slate-800 dark:border-slate-600"></select></label>
+    <div class="grid grid-cols-2 gap-2">
+      <label class="text-sm font-semibold">Mín $<input id="pMin" type="number" min="0" step="50000" class="mt-1 w-full rounded-lg border px-2 py-2 dark:bg-slate-800 dark:border-slate-600"></label>
+      <label class="text-sm font-semibold">Máx $<input id="pMax" type="number" min="0" step="50000" class="mt-1 w-full rounded-lg border px-2 py-2 dark:bg-slate-800 dark:border-slate-600"></label>
+    </div>
+    <label class="block text-sm font-semibold">Ordenar
+      <select id="sort" class="mt-1 w-full rounded-lg border px-3 py-2 dark:bg-slate-800 dark:border-slate-600">
+        <option value="price">Precio: menor a mayor</option><option value="-price">Precio: mayor a menor</option>
+        <option value="-discount_pct">Mayor descuento</option><option value="name">Nombre</option>
+      </select></label>
+  </aside>
+  <section>
+    <p id="resultInfo" class="text-sm text-slate-500 mb-3"></p>
+    <div id="grid" class="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"></div>
+    <button id="more" class="hidden mx-auto mt-6 block rounded-lg border px-5 py-2 text-sm">Ver más</button>
+  </section>
+</main>
+
+<!-- Panel del carrito + simulador -->
+<div id="drawer" class="fixed inset-0 z-30 hidden">
+  <div id="backdrop" class="absolute inset-0 bg-black/50"></div>
+  <div class="absolute right-0 top-0 h-full w-full max-w-3xl overflow-y-auto bg-white dark:bg-slate-800 p-5 space-y-6">
+    <div class="flex items-center"><h2 class="text-xl font-bold">Carrito y simulador</h2>
+      <button id="closeCart" class="ml-auto text-2xl leading-none" aria-label="Cerrar">×</button></div>
+    <div id="cartItems"></div>
+    <div id="cartCompare"></div>
+    <div id="simulator"></div>
+  </div>
+</div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
