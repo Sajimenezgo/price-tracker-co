@@ -57,7 +57,7 @@ export function renderProductCard(p) {
   return `
     <article class="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
       <div>
-        <div class="h-44 flex items-center justify-center p-2 bg-slate-50 dark:bg-slate-900/50 rounded-lg overflow-hidden">
+        <div class="h-44 flex items-center justify-center p-2 bg-white rounded-lg overflow-hidden ring-1 ring-slate-200 dark:ring-0">
           <img
             loading="lazy"
             src="${safeUrl(p.image_url)}"

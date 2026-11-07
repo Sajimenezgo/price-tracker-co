@@ -5,7 +5,7 @@ import { state, getCartItems, setPaymentMethod, setBasis, setTea, setSelectedPla
 import { cop, esc, formatStore, STORE_NAMES } from "../format.js";
 import { buildCartScenarios } from "../cart-logic.js";
 import { PAYMENT_METHODS, financingOptions, recommend, teaToMonthly } from "../finance.js";
-import { renderPlazoTabs, renderFinancingChart } from "./financing-chart.js";
+import { renderPlazoTabs, renderFinancingChart, mergeEquivalent } from "./financing-chart.js";
 
 /**
  * Calcula el capital financiado (subtotal + flete) para cada medio de pago disponible,
@@ -50,12 +50,33 @@ export function calculateCapitalByMethod({ items, products, shipping, basis }) {
 }
 
 /**
+ * Describe dónde comprar para obtener el capital de cada medio de pago (la recomendación
+ * "Tarjeta Éxito" solo es válida si se compra en Éxito: hay que decirlo).
+ * @returns {Record<string, string>}
+ */
+export function purchasePlanByMethod({ items, products, shipping, basis }) {
+  const plans = {};
+  for (const methodKey of Object.keys(PAYMENT_METHODS)) {
+    const sc = buildCartScenarios({ items, products, methodKey, shipping });
+    let id = basis;
+    if (basis === "best") id = sc.best?.id ?? "cross";
+    if (id === "cross") {
+      const used = sc.cross?.storesUsed ?? [];
+      plans[methodKey] = used.length > 1 ? `compra cruzada (${used.map(formatStore).join(" + ")})` : `comprando en ${formatStore(used[0] ?? "")}`;
+    } else {
+      plans[methodKey] = `comprando en ${formatStore(id.replace(/^store:/, ""))}`;
+    }
+  }
+  return plans;
+}
+
+/**
  * Genera el banner con la recomendación más inteligente.
  * @param {{best: any, second: any, savingsVsSecond: number}} rec
  * @param {number} n
  * @returns {string}
  */
-function renderSmartBannerHtml(rec, n) {
+function renderSmartBannerHtml(rec, n, plan = "") {
   if (!rec.best) return "";
 
   const best = rec.best;
@@ -75,7 +96,7 @@ function renderSmartBannerHtml(rec, n) {
         </h4>
       </div>
       <p class="mt-1.5 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
-        Mejor: <strong>${esc(best.label)}</strong> a <strong>${n} meses</strong>, total <strong>${cop(best.total)}</strong> (cuota: <strong>${cop(best.cuota)}/mes</strong>)${savingsText}.
+        Mejor: <strong>${esc(best.label)}</strong>${plan ? ` (${esc(plan)})` : ""} a <strong>${n} meses</strong>, total <strong>${cop(best.total)}</strong> (cuota: <strong>${cop(best.cuota)}/mes</strong>)${savingsText}.
       </p>
     </div>
   `;
@@ -356,7 +377,8 @@ export function initPaymentPanel(container) {
     const rec = recommend(options, state.selectedPlazo);
 
     if (bannerContainer) {
-      bannerContainer.innerHTML = renderSmartBannerHtml(rec, state.selectedPlazo);
+      const plans = purchasePlanByMethod({ items: currentItems, products: state.products, shipping: state.shipping, basis: state.basis });
+      bannerContainer.innerHTML = renderSmartBannerHtml(rec, state.selectedPlazo, plans[rec.best?.methodKey]);
     }
 
     if (tabsContainer) {
@@ -366,7 +388,7 @@ export function initPaymentPanel(container) {
     }
 
     if (chartContainer) {
-      renderFinancingChart(chartContainer, options, {
+      renderFinancingChart(chartContainer, mergeEquivalent(options, rec.best?.methodKey), {
         n: state.selectedPlazo,
         recommendedKey: rec.best?.methodKey,
         formatMoney: cop,

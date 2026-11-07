@@ -166,7 +166,7 @@ export function renderFinancingChart(container, options, { n = 12, recommendedKe
               <!-- Segmento Intereses (ámbar con textura rayada accesible para daltonismo) -->
               ${row.intereses > 0 ? `
                 <div
-                  class="h-full bg-amber-500 text-slate-950 flex items-center justify-center text-[11px] sm:text-xs font-semibold px-1 overflow-hidden"
+                  class="h-full bg-amber-600 text-white flex items-center justify-center text-[11px] sm:text-xs font-semibold px-1 overflow-hidden"
                   style="width: ${row.interesPct.toFixed(2)}%; background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0, 0, 0, 0.15) 5px, rgba(0, 0, 0, 0.15) 10px);"
                   title="Intereses: ${esc(fmt(row.intereses))} (${intPctStr}%)"
                 >
@@ -183,7 +183,7 @@ export function renderFinancingChart(container, options, { n = 12, recommendedKe
               <span>Capital: <strong class="text-slate-700 dark:text-slate-200 font-semibold">${esc(fmt(row.capital))}</strong> (${capPctStr}%)</span>
             </span>
             <span class="inline-flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0" aria-hidden="true"></span>
+              <span class="w-2 h-2 rounded-full bg-amber-600 shrink-0" aria-hidden="true"></span>
               <span>Intereses: <strong class="text-slate-700 dark:text-slate-200 font-semibold">${esc(fmt(row.intereses))}</strong> (${intPctStr}%)</span>
             </span>
           </div>
@@ -254,7 +254,7 @@ export function renderFinancingChart(container, options, { n = 12, recommendedKe
             <span>Capital <span class="text-[11px] text-slate-500 dark:text-slate-400 font-normal">(sólido)</span></span>
           </div>
           <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
-            <span class="inline-block w-3.5 h-3.5 rounded-sm bg-amber-500 border border-amber-600 shrink-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px);" aria-hidden="true"></span>
+            <span class="inline-block w-3.5 h-3.5 rounded-sm bg-amber-600 border border-amber-600 shrink-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px);" aria-hidden="true"></span>
             <span>Intereses <span class="text-[11px] text-slate-500 dark:text-slate-400 font-normal">(rayado)</span></span>
           </div>
         </div>
@@ -314,4 +314,25 @@ export function renderPlazoTabs(container, plazos = [12, 24, 36], selected = 12,
       });
     });
   }
+}
+
+/**
+ * Agrupa opciones con el mismo plazo, capital y total (p. ej. varias tarjetas con la misma TEA y sin descuento)
+ * para no mostrar barras idénticas. Conserva el methodKey recomendado como representante del grupo.
+ * @param {Array<{methodKey:string,label:string,n:number,capital:number,total:number}>} options
+ * @param {string} [recommendedKey]
+ */
+export function mergeEquivalent(options, recommendedKey) {
+  const groups = new Map();
+  for (const o of options) {
+    const k = `${o.n}|${Math.round(o.capital)}|${Math.round(o.total)}`;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(o);
+  }
+  return [...groups.values()].map((g) => {
+    if (g.length === 1) return g[0];
+    const rep = g.find((o) => o.methodKey === recommendedKey) || g[0];
+    const short = g.map((o) => o.label.replace(/^Tarjeta( de Crédito)? ?/, "").trim() || o.label);
+    return { ...rep, label: `${short.join(" · ")} (misma tasa)` };
+  });
 }

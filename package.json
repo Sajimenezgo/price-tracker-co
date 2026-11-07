@@ -1,0 +1,10 @@
+{
+  "name": "price-tracker-co",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i src/tailwind.css -o docs/styles.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i src/tailwind.css -o docs/styles.css --watch",
+    "test": "node docs/js/finance.test.mjs && node docs/js/cart-logic.test.mjs && node docs/js/components/financing-chart.test.mjs"
+  },
+  "devDependencies": { "tailwindcss": "3.4.16" }
+}

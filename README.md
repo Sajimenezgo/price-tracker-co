@@ -63,3 +63,10 @@ node docs/js/components/financing-chart.test.mjs
 
 ## Despliegue
 Settings → Pages → *Deploy from a branch* → `main` / `/docs`.
+
+## Estilos (Tailwind compilado)
+El CSS se compila a `docs/styles.css` (sin CDN en runtime). Tras cambiar clases en `docs/**/*.{html,js}`:
+```bash
+npm install && npm run build:css   # y commitear docs/styles.css
+npm test                           # tests de la lógica financiera y del carrito
+```

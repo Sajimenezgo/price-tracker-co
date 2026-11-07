@@ -9,7 +9,7 @@ from .stores.base import FIELDS
 
 MIN_APPLIANCE_PRICE = 250_000   # descarta accesorios (organizadores, filtros, etc.)
 KEYWORDS = r"(?i)\b(nevera|nevec[oó]n|refrigerador|congelador|lavadora|secadora|lavasecadora|centro de lavado)\b"
-EXCLUDE = r"(?i)\b(organizador|repuesto|filtro|cubierta|funda|soporte|base|mueble|manguera|kit|cable|nevera port[aá]til|termo|cooler|garant[ií]a|plancha|mini lavadora|plegable|port[aá]til|vapor|aspiradora|extendida)\b"
+EXCLUDE = r"(?i)\b(organizador|repuesto|filtro|cubierta|funda|soporte|base|mueble|manguera|kit|cable|nevera port[aá]til|termo|cooler|garant[ií]a|plancha|mini lavadora|plegable|port[aá]til|vapor|aspiradora|extendida|mini\s*(nevera|refrigerador)|termoel[eé]ctric\w*|\d+\s*latas)\b"
 # Modelo = último token alfanumérico (>=5) que mezcle letras y dígitos (p.ej. WT20NBTX6T, ERS433HBWD).
 # Polars (regex de Rust) no soporta look-ahead, por eso se filtra la lista de tokens.
 TOKEN_RE = r"\b[A-Za-z0-9]{5,}\b"

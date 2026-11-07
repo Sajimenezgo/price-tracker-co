@@ -226,7 +226,7 @@ export function renderScenariosHtml({ items, products, methodKey, shipping }) {
           <div class="flex justify-between items-baseline">
             <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Total:</span>
             <span class="text-lg font-extrabold ${isBest ? "text-emerald-600 dark:text-emerald-400" : "text-slate-900 dark:text-slate-100"}">
-              ${cop(data.total)}
+              ${data.complete === false ? "—" : cop(data.total)}
             </span>
           </div>
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chartModel, esc, renderFinancingChart, renderPlazoTabs } from "./financing-chart.js";
+import { mergeEquivalent, chartModel, esc, renderFinancingChart, renderPlazoTabs } from "./financing-chart.js";
 
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} != ${b}`);
 
@@ -177,3 +177,10 @@ console.log("Iniciando tests de financing-chart...");
 }
 
 console.log("\nTodos los tests pasaron exitosamente!");
+
+{
+  const o = [{methodKey:"a",label:"Tarjeta Nu",n:12,capital:100,total:120},{methodKey:"b",label:"Tarjeta Bancolombia",n:12,capital:100,total:120},{methodKey:"c",label:"Libre",n:12,capital:100,total:110}];
+  const m = mergeEquivalent(o, "b");
+  assert.equal(m.length, 2); assert.equal(m[0].methodKey, "b"); assert.ok(m[0].label.includes("Nu"));
+  console.log("✓ mergeEquivalent OK");
+}

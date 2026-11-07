@@ -99,11 +99,29 @@ function updateCartBadge() {
   }
 }
 
+/** Filtros colapsables en móvil + insignia con la cantidad de filtros activos. */
+function setupFilters() {
+  const btn = $("toggleFilters"), panel = $("filtersPanel"), badge = $("filterBadge");
+  if (!btn || !panel) return;
+  btn.addEventListener("click", () => {
+    const open = panel.classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+  const refresh = () => {
+    const f = state.filters;
+    const n = (f.stores?.size ? 1 : 0) + (f.category ? 1 : 0) + (f.brand ? 1 : 0) + (f.min != null ? 1 : 0) + (f.max != null ? 1 : 0);
+    if (badge) { badge.textContent = n; badge.classList.toggle("hidden", n === 0); }
+  };
+  subscribe(refresh);
+  refresh();
+}
+
 /**
  * Inicialización de la aplicación.
  */
 async function boot() {
   setupDrawer();
+  setupFilters();
   updateCartBadge();
 
   // Suscribirse para mantener actualizado el contador del carrito
